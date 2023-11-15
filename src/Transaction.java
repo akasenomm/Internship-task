@@ -3,49 +3,34 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class Transaction {
-    private String type;
-    UUID matchId;
+    private Operation operation;
+    private Match match;
     private int amount;
     private String betSide;
     private UUID playerId;
-    public Transaction(UUID playerId, String type, UUID matchId, int amount, String betSide) {
-        this.playerId = playerId;
-        this.type = type;
-        this.matchId = matchId;
+    public Transaction(Operation operation, Match match, int amount, String betSide) {
+        this.operation = operation;
+        this.match = match;
         this.amount = amount;
         this.betSide = betSide;
     }
-    public Transaction(String type, UUID matchId, int amount, String betSide) {
-        this.type = type;
-        this.matchId = matchId;
-        this.amount = amount;
-        this.betSide = betSide;
-    }
-    public Transaction(UUID playerId, String type, int amount) {
-        this.playerId = playerId;
-        this.type = type;
+    public Transaction(Operation operation, int amount) {
+        this.operation = operation;
         this.amount = amount;
     }
-    public Transaction(String type, int amount) {
-        this.type = type;
-        this.amount = amount;
+    public boolean playerBetWon() {
+        return this.betSide.equals(match.getResult());
     }
 
-    public String getType() {
-        return type;
+    public long calculateBetWin() {
+        int amount = this.getAmount();
+        BigDecimal winnerSideRate = match.getMatchWinnerRate();
+        BigDecimal betWinnings = new BigDecimal(amount).multiply(winnerSideRate);
+        return betWinnings.longValue();
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }
 
-    public UUID getMatchId() {
-        return matchId;
-    }
 
-    public void setMatchId(UUID matchId) {
-        this.matchId = matchId;
-    }
 
     public int getAmount() {
         return amount;
@@ -71,44 +56,29 @@ public class Transaction {
         this.playerId = playerId;
     }
 
-    public void operationDeposit(Player player) {
-        if (amount <= player.getBalance() && amount > 0) {
-            player.setBalance(player.getBalance() + amount);
-        } else {
-            System.out.println("Error: insufficient funds to withdraw");
-        }
-    }
-    public void operationWithdraw(Player player) {
-        if (amount <= player.getBalance() && amount> 0) {
-            player.setBalance(player.getBalance() - amount);
-        } else {
-            System.out.println("Error: insufficient funds to withdraw");
-        }
+
+    public Operation getOperation() {
+        return operation;
     }
 
-    public void operationBet(Player player, HashMap<UUID, Match> matches) {
-        Match match = matches.get(matchId);
-        String matchWinnerSide = match.getResult();
+    public void setOperation(Operation operation) {
+        this.operation = operation;
+    }
 
-        BigDecimal matchWinnerRate = match.getMatchWinnerRate();
+    public Match getMatch() {
+        return match;
+    }
 
-        if (betSide.equals(matchWinnerSide)) {
-            BigDecimal playerBalance = new BigDecimal(player.getBalance());
-            BigDecimal betWinnings = new BigDecimal(amount).multiply(matchWinnerRate);
-            BigDecimal playerNewBalance = playerBalance.add(betWinnings);
-
-            player.setBalance(playerNewBalance.longValue());
-        } else {
-            player.setBalance(player.getBalance() - amount);
-        }
+    public void setMatch(Match match) {
+        this.match = match;
     }
 
     @Override
     public String toString() {
         return "Operation{" +
                 " playerId=" + playerId + '\'' +
-                ", operationName='" + type + '\'' +
-                ", matchId=" + matchId +
+                ", operationName='" + operation + '\'' +
+                ", matchId=" + match +
                 ", operationAmount=" + amount +
                 ", betSide='" + betSide + '\''+"}";
     }

@@ -34,6 +34,6 @@ public class Match {
             return rateA;
         if (result.equals("B"))
             return rateB;
-        return new BigDecimal(0);
+        return new BigDecimal(-1);
     }
 }

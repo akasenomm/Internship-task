@@ -1,4 +1,5 @@
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Queue;
 import java.util.UUID;
 
@@ -36,7 +37,7 @@ public class Player {
     }
 
 
-    public void bet(Match match, Transaction transaction) {
+    public void bet(Transaction transaction) {
         this.totalBets++;
 
         int betAmount = transaction.getAmount();
@@ -46,23 +47,15 @@ public class Player {
         }
 
         String playerBetSide = transaction.getBetSide();
-        String result = match.getResult();
-        BigDecimal matchWinnerRate = match.getMatchWinnerRate();
+        String result = transaction.getMatch().getResult();
 
         if (playerBetSide.equals(result)) {
-            this.balance = calculateNewBalance(betAmount, matchWinnerRate);
+            long betWinnings = transaction.calculateBetWin();
+            this.balance += betWinnings;
             this.totalWins++;
-        } else if (result.equals("DRAW")) {
-            return;
-        } else {
+        } else if (!result.equals("DRAW")) {
             this.balance -= betAmount;
         }
-    }
-
-    public long calculateNewBalance(long betAmount, BigDecimal matchWinnerRate) {
-        BigDecimal betWinnings = new BigDecimal(betAmount).multiply(matchWinnerRate);
-        BigDecimal newBalance = betWinnings.add(new BigDecimal(this.balance));
-        return newBalance.longValue();
     }
 
     public boolean isLegitimate() {
@@ -80,6 +73,11 @@ public class Player {
     public void setBalance(long balance) {
         this.balance = balance;
     }
+    public BigDecimal getWinRate() {
+        double winRateDouble = (double) totalWins / (double) totalBets;
+        BigDecimal winRate = BigDecimal.valueOf(winRateDouble);
+        return winRate.setScale(2, RoundingMode.HALF_UP);
+    }
 
     @Override
     public String toString() {
@@ -87,7 +85,7 @@ public class Player {
                 "playerId=" + playerId +
                 ", totalBets=" + totalBets +
                 ", totalWins=" + totalWins +
-                ", balance=" + balance +
+                ", balance=" + balance + ", winrate=" + getWinRate()+
                 '}';
     }
 
