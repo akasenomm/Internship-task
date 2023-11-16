@@ -1,10 +1,9 @@
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.Queue;
 import java.util.UUID;
 
 public class Player {
-    private UUID playerId;
+    private final UUID playerId;
     private int totalBets;
     private int totalWins;
     private long balance;
@@ -46,16 +45,19 @@ public class Player {
             return;
         }
 
-        String playerBetSide = transaction.getBetSide();
-        String result = transaction.getMatch().getResult();
-
-        if (playerBetSide.equals(result)) {
-            long betWinnings = transaction.calculateBetWin();
+        if (transaction.playerBetWon()) {
+            long betWinnings = transaction.calculateBetWinnings();
             this.balance += betWinnings;
             this.totalWins++;
-        } else if (!result.equals("DRAW")) {
+        } else if (transaction.playerBetLost()) {
             this.balance -= betAmount;
         }
+    }
+
+    public BigDecimal getWinRate() {
+        double winRateDouble = (double) totalWins / (double) totalBets;
+        BigDecimal winRate = BigDecimal.valueOf(winRateDouble);
+        return winRate.setScale(2, RoundingMode.HALF_UP);
     }
 
     public boolean isLegitimate() {
@@ -73,20 +75,12 @@ public class Player {
     public void setBalance(long balance) {
         this.balance = balance;
     }
-    public BigDecimal getWinRate() {
-        double winRateDouble = (double) totalWins / (double) totalBets;
-        BigDecimal winRate = BigDecimal.valueOf(winRateDouble);
-        return winRate.setScale(2, RoundingMode.HALF_UP);
-    }
 
     @Override
     public String toString() {
-        return "Player{" +
-                "playerId=" + playerId +
-                ", totalBets=" + totalBets +
-                ", totalWins=" + totalWins +
-                ", balance=" + balance + ", winrate=" + getWinRate()+
-                '}';
+        return this.playerId + " " +
+                this.balance + " " +
+                this.getWinRate();
     }
 
 

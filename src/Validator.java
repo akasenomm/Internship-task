@@ -19,8 +19,9 @@ public class Validator {
         for (UUID playerId : transactions.keySet()) {
             Queue<Transaction> playerTransactionsGroup = transactions.get(playerId);
             Player player = new Player(playerId);
-            long playerImpactOnCasino = 0;;
+            long reserveBalance = 0;
             for (Transaction transaction : playerTransactionsGroup) {
+                processTransaction(transaction);
                 int amount = transaction.getAmount();
 
                 switch (transaction.getOperation()) {
@@ -30,27 +31,62 @@ public class Validator {
                 }
 
                 if (!player.isLegitimate()) {
+                    transaction.setPlayerId(playerId);
                     illegimatePlayerTransactions.add(transaction);
                     break;
                 }
-                if (transaction.getOperation() == Operation.BET && transaction.playerBetWon()) {
-                    //System.out.println("KASSA KAOTAS: "+ amount + ", bet . "+transaction.getAmount() + ", t= "+ transaction.getMatch().getId());
-                    System.out.println("this one : "+ transaction);
-                    playerImpactOnCasino += transaction.calculateBetWin();
-                } else if (transaction.getOperation() == Operation.BET){
-                    playerImpactOnCasino -= amount;
+
+                if (transaction.playerBetWon()) {
+                    reserveBalance += transaction.calculateBetWinnings();
+                } else if (transaction.playerBetLost()){
+                    reserveBalance -= transaction.getAmount();
                 }
-                //System.out.println(playerImpactOnCasino + " , " +transaction);
             }
             if (player.isLegitimate()) {
                 legitPlayers.add(player);
-                casinoHostBalance -= playerImpactOnCasino;
+                casinoHostBalance -= reserveBalance;
             }
+            System.out.println("HOSTBALANCE: "+casinoHostBalance);
         }
+        System.out.println(casinoHostBalance);
         System.out.println(".........");
         System.out.println(".........");
         System.out.println("Legit : " + legitPlayers);
         System.out.println(" Illegal: " + illegimatePlayerTransactions);
-        System.out.println(casinoHostBalance);
+    }
+    public static void processTransaction(Transaction transaction) {
+
+    }
+
+    public HashMap<UUID, Queue<Transaction>> getTransactions() {
+        return transactions;
+    }
+
+    public void setTransactions(HashMap<UUID, Queue<Transaction>> transactions) {
+        this.transactions = transactions;
+    }
+
+    public ArrayList<Player> getLegitPlayers() {
+        return legitPlayers;
+    }
+
+    public void setLegitPlayers(ArrayList<Player> legitPlayers) {
+        this.legitPlayers = legitPlayers;
+    }
+
+    public ArrayList<Transaction> getIllegimatePlayerTransactions() {
+        return illegimatePlayerTransactions;
+    }
+
+    public void setIllegimatePlayerTransactions(ArrayList<Transaction> illegimatePlayerTransactions) {
+        this.illegimatePlayerTransactions = illegimatePlayerTransactions;
+    }
+
+    public long getCasinoHostBalance() {
+        return casinoHostBalance;
+    }
+
+    public void setCasinoHostBalance(long casinoHostBalance) {
+        this.casinoHostBalance = casinoHostBalance;
     }
 }

@@ -1,5 +1,4 @@
 import java.math.BigDecimal;
-import java.util.HashMap;
 import java.util.UUID;
 
 public class Transaction {
@@ -19,12 +18,26 @@ public class Transaction {
         this.amount = amount;
     }
     public boolean playerBetWon() {
-        return this.betSide.equals(match.getResult());
+        if (operation == Operation.DEPOSIT || operation == Operation.WITHDRAW)
+            return false;
+
+        return this.betSide.equals(match.result());
+    }
+    public boolean playerBetLost() {
+        if (operation == Operation.DEPOSIT || operation == Operation.WITHDRAW)
+            return false;
+
+        return !this.betSide.equals(match.result()) && !(match.result().equals("DRAW"));
     }
 
-    public long calculateBetWin() {
-        int amount = this.getAmount();
+    public boolean playerBetDraw() {
+        return match.result().equals("DRAW");
+    }
+
+    public long calculateBetWinnings() {
         BigDecimal winnerSideRate = match.getMatchWinnerRate();
+
+        //BigDecimal winnerSideRate = match.getMatchWinnerRate();
         BigDecimal betWinnings = new BigDecimal(amount).multiply(winnerSideRate);
         return betWinnings.longValue();
     }
@@ -75,11 +88,10 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Operation{" +
-                " playerId=" + playerId + '\'' +
-                ", operationName='" + operation + '\'' +
-                ", matchId=" + match +
-                ", operationAmount=" + amount +
-                ", betSide='" + betSide + '\''+"}";
+        return playerId + " " +
+                operation + " " +
+                match + " " +
+                amount + " " +
+                betSide;
     }
 }
