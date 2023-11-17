@@ -11,4 +11,8 @@ public record Match(UUID id, BigDecimal rateA, BigDecimal rateB, String result) 
         System.out.println("Invalid match result in match: " + this);
         return new BigDecimal(0);
     }
+
+    public UUID getMatchId() {
+        return id;
+    }
 }

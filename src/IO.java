@@ -88,15 +88,18 @@ public class IO {
 
     public static void writeResult(TransactionsProcessor processor, String fileName) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
-            // Get legitimate player list and sort it
+            // Get legitimate and illegitimate player lists and sort them by ID
             List<Player> legitimatePlayers = processor.getCasino().getLegitPlayers();
             legitimatePlayers.sort(Comparator.comparing(Player::getPlayerId));
+
+            List<Transaction> illegitimatePlayerTransactions = processor.getCasino().getIllegitimatePlayerTransactions();
+            illegitimatePlayerTransactions.sort(Comparator.comparing(Transaction::getPlayerId));
 
             // Write data for each legitimate player
             writeList(bw, legitimatePlayers);
 
             // Write data for each illegal transaction
-            writeList(bw, processor.getCasino().getIllegitimatePlayerTransactions());
+            writeList(bw, illegitimatePlayerTransactions);
 
             // Write the final casino host balance
             bw.write(String.valueOf(processor.getCasino().getCasinoHostBalance()));
@@ -107,8 +110,11 @@ public class IO {
     }
 
     private static void writeList(BufferedWriter bw, List<?> list) throws IOException {
-        for (Object obj : list) {
-            bw.write(String.valueOf(obj));
+        for (int i = 0; i < list.size(); i++) {
+            bw.write(String.valueOf(list.get(i)));
+            if (i != list.size()-1) {
+                bw.write(", ");
+            }
         }
         emptyLine(bw);
     }

@@ -16,13 +16,16 @@ public class TransactionsProcessor {
 
             if (!transaction.getPlayer().isLegitimate()) {
                 casino.addIllegitimatePlayerTransaction(transaction);
-                continue;
+                while (!casino.isFinalPlayerTransaction(transaction, transactions)) {
+                    transactions.remove();
+                }
             }
 
             casino.updateReserveBalance(transaction);
 
             if (casino.isFinalPlayerTransaction(transaction, transactions))
-                casino.addLegitPlayer(transaction.getPlayer());
+                if (transaction.getPlayer().isLegitimate())
+                    casino.addLegitPlayer(transaction.getPlayer());
 
         }
     }

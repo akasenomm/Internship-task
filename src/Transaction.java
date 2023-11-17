@@ -1,5 +1,6 @@
 import java.math.BigDecimal;
 import java.util.Optional;
+import java.util.UUID;
 
 public class Transaction {
     private final Player player;
@@ -59,26 +60,26 @@ public class Transaction {
         return this.player;
     }
 
+    public UUID getPlayerId() {
+        return this.getPlayer().getPlayerId();
+    }
     public Optional<Match> getMatch() {
         return match;
     }
-    public void nullifyMissing() {
-        if (match.isEmpty()) {
-            match = null;
-        }
-        if (betSide.isEmpty()) {
-            betSide = null;
-        }
-    }
-
 
     @Override
     public String toString() {
-        nullifyMissing();
-        return player.getPlayerId() + " " +
-                operation + " " +
-                match + " " +
-                amount + " " +
-                betSide;
+        String output;
+
+        UUID matchId = null;
+        String betSideString = null;
+        if (!match.isEmpty() && !betSide.isEmpty()) {
+            matchId = match.get().id();
+            betSideString = betSide.get().toString();
+            output = player.getPlayerId()+" "+operation+" "+matchId+" "+amount+" "+betSideString;
+        } else {
+            output = player.getPlayerId()+" "+operation+" "+amount;
+        }
+        return output;
     }
 }

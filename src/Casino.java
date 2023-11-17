@@ -52,11 +52,4 @@ public class Casino {
     public long getCasinoHostBalance() {
         return casinoHostBalance;
     }
-
-    public void printResults() {
-        System.out.println(casinoHostBalance);
-        System.out.println("Legit : " + legitPlayers);
-        System.out.println(" Illegal: " + illegitimatePlayerTransactions);
-    }
-
 }
