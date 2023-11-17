@@ -22,7 +22,7 @@ public class Player {
             this.balance += amount;
         else {
             this.legitimate = false;
-            System.out.println("Error: negative balance");
+            System.out.printf("Error: negative deposit %s, %s", amount, playerId);
         }
     }
 
@@ -31,7 +31,7 @@ public class Player {
             this.balance -= amount;
         } else {
             this.legitimate = false;
-            System.out.println("Error: insufficient funds to withdraw");
+            System.out.printf("Error: current balance %s, withdraw amount %s, %s", balance, amount, playerId);
         }
     }
 
@@ -55,6 +55,9 @@ public class Player {
     }
 
     public BigDecimal getWinRate() {
+        if (this.totalBets == 0)
+            return new BigDecimal(0);
+
         double winRateDouble = (double) totalWins / (double) totalBets;
         BigDecimal winRate = BigDecimal.valueOf(winRateDouble);
         return winRate.setScale(2, RoundingMode.HALF_UP);
@@ -64,24 +67,14 @@ public class Player {
         return legitimate;
     }
 
-    public void setLegitimacy(boolean legitimacy) {
-        this.legitimate = legitimacy;
-    }
-
-    public long getBalance() {
-        return balance;
-    }
-
-    public void setBalance(long balance) {
-        this.balance = balance;
+    public UUID getPlayerId() {
+        return playerId;
     }
 
     @Override
     public String toString() {
-        return this.playerId + " " +
-                this.balance + " " +
-                this.getWinRate();
+        return playerId + " " +
+                balance +" " +
+                getWinRate();
     }
-
-
 }

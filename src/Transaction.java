@@ -1,94 +1,81 @@
 import java.math.BigDecimal;
-import java.util.UUID;
+import java.util.Optional;
 
 public class Transaction {
-    private Operation operation;
-    private Match match;
-    private int amount;
-    private String betSide;
-    private UUID playerId;
-    public Transaction(Operation operation, Match match, int amount, String betSide) {
+    private final Player player;
+    private final Operation operation;
+    private Optional<Match> match;
+    private final int amount;
+    private Optional<String> betSide;
+    public Transaction(Player player, Operation operation, Match match, int amount, String betSide) {
+        this.player = player;
         this.operation = operation;
-        this.match = match;
+        this.match = Optional.ofNullable(match);
         this.amount = amount;
-        this.betSide = betSide;
-    }
-    public Transaction(Operation operation, int amount) {
-        this.operation = operation;
-        this.amount = amount;
+        this.betSide = Optional.ofNullable(betSide);
     }
     public boolean playerBetWon() {
-        if (operation == Operation.DEPOSIT || operation == Operation.WITHDRAW)
-            return false;
-
-        return this.betSide.equals(match.result());
+        return isBetOperation() && this.betSide.orElse("").equals(match.map(Match::result).orElse(""));
     }
+
     public boolean playerBetLost() {
-        if (operation == Operation.DEPOSIT || operation == Operation.WITHDRAW)
+        if (!isBetOperation()) {
             return false;
+        }
 
-        return !this.betSide.equals(match.result()) && !(match.result().equals("DRAW"));
+        String betSideValue = this.betSide.orElse("");
+        String matchResult = match.map(Match::result).orElse("");
+
+        boolean isBetSideDifferentFromResult = !betSideValue.equals(matchResult);
+        boolean isMatchResultNotDraw = !matchResult.equals("DRAW");
+
+        return isBetSideDifferentFromResult && isMatchResultNotDraw;
     }
 
-    public boolean playerBetDraw() {
-        return match.result().equals("DRAW");
+    private boolean isBetOperation() {
+        return operation != Operation.DEPOSIT && operation != Operation.WITHDRAW;
     }
+    public void performPlayerOperation() {
+        switch (operation) {
+            case DEPOSIT -> player.deposit(amount);
+            case WITHDRAW ->  player.withdraw(amount);
+            case BET -> player.bet(this);
+        }
+    }
+
 
     public long calculateBetWinnings() {
-        BigDecimal winnerSideRate = match.getMatchWinnerRate();
-
-        //BigDecimal winnerSideRate = match.getMatchWinnerRate();
+        BigDecimal winnerSideRate = match.map(Match::getMatchWinnerRate).orElse(BigDecimal.ZERO);
         BigDecimal betWinnings = new BigDecimal(amount).multiply(winnerSideRate);
         return betWinnings.longValue();
     }
-
-
-
 
     public int getAmount() {
         return amount;
     }
 
-    public void setAmount(int amount) {
-        this.amount = amount;
+
+    public Player getPlayer() {
+        return this.player;
     }
 
-    public String getBetSide() {
-        return betSide;
-    }
-
-    public void setBetSide(String betSide) {
-        this.betSide = betSide;
-    }
-
-    public UUID getPlayerId() {
-        return playerId;
-    }
-
-    public void setPlayerId(UUID playerId) {
-        this.playerId = playerId;
-    }
-
-
-    public Operation getOperation() {
-        return operation;
-    }
-
-    public void setOperation(Operation operation) {
-        this.operation = operation;
-    }
-
-    public Match getMatch() {
+    public Optional<Match> getMatch() {
         return match;
     }
-
-    public void setMatch(Match match) {
-        this.match = match;
+    public void nullifyMissing() {
+        if (match.isEmpty()) {
+            match = null;
+        }
+        if (betSide.isEmpty()) {
+            betSide = null;
+        }
     }
+
 
     @Override
     public String toString() {
-        return playerId + " " +
+        nullifyMissing();
+        return player.getPlayerId() + " " +
                 operation + " " +
                 match + " " +
                 amount + " " +

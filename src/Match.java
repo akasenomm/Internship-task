@@ -7,6 +7,8 @@ public record Match(UUID id, BigDecimal rateA, BigDecimal rateB, String result) 
             return rateA;
         if (result.equals("B"))
             return rateB;
-        return new BigDecimal(-1);
+
+        System.out.println("Invalid match result in match: " + this);
+        return new BigDecimal(0);
     }
 }

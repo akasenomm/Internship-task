@@ -1,17 +1,19 @@
-import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Queue;
+import java.util.UUID;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // Read match data into hashmap.
-        HashMap<UUID, Match> matchData = IORead.readMatches("resource/match_data2.txt");
+        HashMap<UUID, Match> matchData = IO.readMatches("resource/match_data2.txt");
 
-        // Read player data (each row/transaction is one operation) into operations queue.
-        HashMap<UUID, Queue<Transaction>> playerData = IORead.readPlayerData("resource/player_data2.txt", matchData);
-        Validator validator = new Validator(playerData);
-        validator.validatePlayers();
-        System.out.println("??????????????????");
-        IOWrite.writeResult(validator, "resultsProov1.txt");
+        Queue<Transaction> playerData = IO.readPlayerData("resource/player_data2.txt", matchData);
+
+        TransactionsProcessor transactionsProcessor = new TransactionsProcessor(playerData);
+
+        transactionsProcessor.validatePlayers();
+        IO.writeResult(transactionsProcessor, "resultsProov1.txt");
+
 
     }
 }
