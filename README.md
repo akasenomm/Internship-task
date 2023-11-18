@@ -30,7 +30,7 @@ This class represents a casino that manages the betting game. A casino has the f
 
     legitPlayers: A list of legitimate players who have not performed any illegal transactions.
     illegitimatePlayerTransactions: A list of transactions that are illegal, such as betting or withdrawing more than the balance.
-    reserveBalance: The amount of money that the casino has reserved for paying the winnings of the players.
+    reserveBalance: The amount of money that the casino has reserved for paying the winnings of the players (staked until player is declared either legitimate or illegitimate).
     casinoHostBalance: The amount of money that the casino has earned from the game.
 
 ## TransactionsProcessor Class
