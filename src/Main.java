@@ -6,6 +6,11 @@ import java.util.HashMap;
 import java.util.Queue;
 import java.util.UUID;
 
+/**
+ * Java program to process betting data. Playtech winternship 2024 task.
+ *
+ * Artur Kasenõmm
+ */
 public class Main {
     public static void main(String[] args) {
         // Read match data into hashmap.
