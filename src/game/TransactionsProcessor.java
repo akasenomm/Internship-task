@@ -49,13 +49,13 @@ public class TransactionsProcessor {
         }
 
         // Update the casino's reserve balance
+        // (reserve balance impacts real balance only when player is claimed legitimate after all transactions)
         casino.updateReserveBalance(transaction);
 
         // If this is the last transaction for the player, and it was legitimate,
-        // we can add the player to the legitimate player's list (all other were too then)
-        if (casino.isLastTransactionForPlayer(transaction, transactions)) {
+        // we can add the player to the legitimate player's list (all other moves were too then)
+        if (casino.isLastTransactionForPlayer(transaction, transactions))
             casino.addPlayer(transaction.getPlayer());
-        }
     }
 
     /**
@@ -77,9 +77,8 @@ public class TransactionsProcessor {
      */
     public void removeRemainingTransactionsForPlayer(Transaction transaction) {
         // While there are more transactions for the player, remove them
-        while (!casino.isLastTransactionForPlayer(transaction, transactions)) {
+        while (!casino.isLastTransactionForPlayer(transaction, transactions))
             transactions.remove();
-        }
     }
 
     /**

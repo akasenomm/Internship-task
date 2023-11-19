@@ -55,7 +55,6 @@ public class Transaction {
         if (!isBetOperation())
             return false;
 
-
         String betSideValue = this.betSide.orElse("");
         String matchResult = match.map(Match::result).orElse("");
         // Player bet side is not result.
