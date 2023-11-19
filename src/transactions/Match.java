@@ -1,4 +1,4 @@
-package game.transactions;
+package transactions;
 
 import java.math.BigDecimal;
 import java.util.UUID;

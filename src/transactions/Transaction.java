@@ -1,8 +1,4 @@
-package game.transactions;
-
-import game.transactions.Match;
-import game.transactions.Operation;
-import game.transactions.Player;
+package transactions;
 
 import java.math.BigDecimal;
 import java.util.Optional;

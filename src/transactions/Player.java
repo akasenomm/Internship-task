@@ -1,4 +1,4 @@
-package game.transactions;
+package transactions;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -90,7 +90,7 @@ public class Player {
      *
      * @return the win rate
      */
-    public BigDecimal getWinRate() {
+    private BigDecimal getWinRate() {
         // To avoid dividing by zero
         if (this.totalBets == 0)
             return new BigDecimal(0);

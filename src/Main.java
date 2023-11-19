@@ -1,8 +1,7 @@
-import game.transactions.Match;
-import game.transactions.Operation;
-import game.transactions.Player;
-import game.transactions.Transaction;
-import game.TransactionsProcessor;
+import transactions.Match;
+import transactions.Operation;
+import transactions.Player;
+import transactions.Transaction;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -14,29 +13,30 @@ import java.util.*;
  * Artur Kasenõmm
  */
 public class Main {
+    private static final String matchData = "resource/match_data.txt";
+    private static final String playerData = "resource/player_data.txt";
+    private static final String resultData = "src/result.txt";
+
     public static void main(String[] args) {
         // Read match data into hashmap.
-        HashMap<UUID, Match> matchData = readMatches("resource/match_data.txt");
-
+        HashMap<UUID, Match> matchData = readMatches();
         // Read player data into queue.
-        Queue<Transaction> playerData = readPlayerData("resource/player_data.txt", matchData);
-
+        Queue<Transaction> playerData = readPlayerData(matchData);
         // Process player data.
         TransactionsProcessor transactionsProcessor = new TransactionsProcessor(playerData);
         transactionsProcessor.processTransactions();
-
         // Write results.
-        writeResult(transactionsProcessor, "src/result.txt");
+        writeResult(transactionsProcessor);
     }
 
     /**
      * Reads match data from a file and returns a map of matches.
-     * @param path The path to the file.
+     *
      * @return A map of matches.
      */
-    public static HashMap<UUID, Match> readMatches(String path) {
+    private static HashMap<UUID, Match> readMatches() {
         HashMap<UUID, Match> matchesMap = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(matchData))) {
             String line;
             // Read each line
             while ((line = br.readLine()) != null) {
@@ -57,21 +57,19 @@ public class Main {
 
     /**
      * Reads player data from a file and returns a queue of transactions.
-     * @param path The path to the file.
      * @param matchMap A map of matches.
      * @return A queue of transactions.
      */
-    public static Queue<Transaction> readPlayerData(String path, HashMap<UUID, Match> matchMap) {
+    private static Queue<Transaction> readPlayerData(HashMap<UUID, Match> matchMap) {
         HashMap<UUID, Player> playersMap = new HashMap<>();
         Queue<Transaction> playerTransactions = new LinkedList<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(path))) {
+        try (BufferedReader br = new BufferedReader(new FileReader(playerData))) {
             // Read each line
             String line;
             while ((line = br.readLine()) != null) {
                 // Create Transaction object and add it to queue
                 Transaction transaction = parseTransaction(line, playersMap, matchMap);
-                if (transaction != null)
-                    playerTransactions.add(transaction);
+                playerTransactions.add(transaction);
             }
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
@@ -86,9 +84,8 @@ public class Main {
      * @param matchMap A map of matches.
      * @return A transaction.
      */
-    public static Transaction parseTransaction(String line, HashMap<UUID, Player> playersMap, HashMap<UUID, Match> matchMap) {
+    private static Transaction parseTransaction(String line, HashMap<UUID, Player> playersMap, HashMap<UUID, Match> matchMap) {
         String[] transactionData = line.trim().split(",");
-
         // Parse data
         UUID playerId = UUID.fromString(transactionData[0]);
         Operation operation = Operation.valueOf(transactionData[1]);
@@ -112,10 +109,9 @@ public class Main {
     /**
      * Writes the results of a TransactionsProcessor to a file.
      * @param processor The TransactionsProcessor.
-     * @param fileName The name of the file.
      */
-    public static void writeResult(TransactionsProcessor processor, String fileName) {
-        try (BufferedWriter bw = new BufferedWriter(new FileWriter(fileName))) {
+    private static void writeResult(TransactionsProcessor processor) {
+        try (BufferedWriter bw = new BufferedWriter(new FileWriter(resultData))) {
             // Get legitimate and illegitimate player lists and sort them by ID
             List<Player> legitimatePlayers = processor.getCasino().getLegitPlayers();
             legitimatePlayers.sort(Comparator.comparing(Player::getPlayerId));
@@ -140,7 +136,7 @@ public class Main {
      * @param list The list.
      * @throws IOException If an I/O error occurs.
      */
-    public static void writeList(BufferedWriter bw, List<?> list) throws IOException {
+    private static void writeList(BufferedWriter bw, List<?> list) throws IOException {
         for (int i = 0; i < list.size(); i++) {
             bw.write(String.valueOf(list.get(i)));
             if (i != list.size()-1)

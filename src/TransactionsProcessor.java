@@ -1,6 +1,4 @@
-package game;
-
-import game.transactions.Transaction;
+import transactions.Transaction;
 
 import java.util.*;
 
@@ -36,7 +34,7 @@ public class TransactionsProcessor {
      *
      * @param transaction the transaction to be processed
      */
-    public void processTransaction(Transaction transaction) {
+    private void processTransaction(Transaction transaction) {
         // Perform the operation associated with the transaction
         transaction.performPlayerOperation();
 
@@ -63,7 +61,7 @@ public class TransactionsProcessor {
      *
      * @param transaction the transaction associated with the illegitimate player
      */
-    public void handleIllegitimatePlayer(Transaction transaction) {
+    private void handleIllegitimatePlayer(Transaction transaction) {
         // Add the transaction to the list of illegitimate transactions
         casino.addIllegitimateTransaction(transaction);
         // Remove all remaining transactions for the player
@@ -75,7 +73,7 @@ public class TransactionsProcessor {
      *
      * @param transaction the transaction associated with the player
      */
-    public void removeRemainingTransactionsForPlayer(Transaction transaction) {
+    private void removeRemainingTransactionsForPlayer(Transaction transaction) {
         // While there are more transactions for the player, remove them
         while (!casino.isLastTransactionForPlayer(transaction, transactions))
             transactions.remove();

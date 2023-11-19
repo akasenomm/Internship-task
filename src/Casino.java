@@ -1,7 +1,5 @@
-package game;
-
-import game.transactions.Player;
-import game.transactions.Transaction;
+import transactions.Player;
+import transactions.Transaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +10,7 @@ import java.util.UUID;
  * This class represents a Casino with a list of legitimate players,
  * a list of illegitimate transactions, a reserve balance, and a casino host balance.
  * The reserve balance is to keep track of player's impact on Casino balance.
+ * The reserve balance impacts casino balance once player is deemed legitimate.
  */
 public class Casino {
     private final List<Player> legitPlayers;

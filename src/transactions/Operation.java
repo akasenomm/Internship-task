@@ -1,4 +1,4 @@
-package game.transactions;
+package transactions;
 
 public enum Operation {
     /**
