@@ -4,6 +4,8 @@ Playtech Winternship 2024 task
 
 This Java project processes betting data for multiple players and matches. It simulates a betting game where players can perform three types of operations: deposit, withdraw, and bet. The matches have two sides, A and B, and each match has a result and a rate value for each side. The players gain or lose coins based on their bets and the match outcomes. The program reads input data from two text files, player_data.txt and match_data.txt, and writes output data to a text file, result.txt. The output data consists of three groups: the list of legitimate players with their final balance and win rate, the list of illegitimate players with their first illegal operation, and the summary statistics of the game.
 
+# Important classes 
+
 ## Transaction Class
 
 This class represents a transaction (player data) in the betting system. A transaction is an action performed by a player, such as depositing, withdrawing, or betting money on a match. A transaction has the following attributes:
